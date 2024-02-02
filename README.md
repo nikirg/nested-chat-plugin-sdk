@@ -22,7 +22,7 @@ poetry add nested-chat-plugin-sdk
 ## Example
 ```python
 from fastapi import FastAPI, Request
-from plugin_sdk.plugin_sdk import PluginRouter, SyncRequest
+from nested_chat_plugin_sdk.sdk import PluginRouter, SyncRequest
 
 app = FastAPI()
 plugin_router = PluginRouter(api_url="")
@@ -62,7 +62,7 @@ app.include_router(plugin_router)
 ## SyncRequest Schema
 
 ```python
-from plugin_sdk.schemes import SyncRequest
+from nested_chat_plugin_sdk.schemes import SyncRequest
 
 class SyncRequest(BaseModel):
     project: dict[str, Any]
