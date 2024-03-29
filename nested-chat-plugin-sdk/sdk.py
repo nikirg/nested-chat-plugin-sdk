@@ -1,4 +1,4 @@
-from schemes import SyncRequest
+from .schemes import SyncRequest
 from typing import Callable
 from fastapi import APIRouter, Request, HTTPException
 import httpx
