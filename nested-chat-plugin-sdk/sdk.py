@@ -1,7 +1,7 @@
 from .schemes import SyncRequest
 from typing import Callable
 from fastapi import APIRouter, Request, HTTPException
-import httpx
+import aiohttp
 class PluginRouter(APIRouter):
     def __init__(self, api_url: str=None, plugin_name: str = None):
         super().__init__()
@@ -29,10 +29,13 @@ class PluginRouter(APIRouter):
         self.add_api_route("/execute", self._handle_execute, methods=["POST"])
 
     async def sync(self) -> int:
-        async with httpx.AsyncClient() as client:
+        async with aiohttp.ClientSession() as session:
             payload = {"name": self.plugin_name}
-            response = await client.post(self.api_url, json=payload)
-            return response.status_code
+            try:
+                async with session.post(self.api_url, json=payload) as response:
+                    return response.status
+            except aiohttp.ClientError as e:
+                return 404
 
     async def _handle_create(self, request_data: SyncRequest):
         if not self.create_handler:
