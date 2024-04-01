@@ -1,6 +1,6 @@
 from .schemes import SyncRequest
 from typing import Callable
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, status
 import aiohttp
 class PluginRouter(APIRouter):
     def __init__(self, api_url: str=None, plugin_name: str = None):
@@ -11,6 +11,7 @@ class PluginRouter(APIRouter):
         self.update_handler = None
         self.delete_handler = None
         self.execute_handler = None
+        self.add_api_route("/health", self._health_check, methods=["GET"])
 
     def on_create(self, handler: Callable):
         self.create_handler = handler
@@ -36,6 +37,9 @@ class PluginRouter(APIRouter):
                     return response.status
             except aiohttp.ClientError as e:
                 return 404
+
+    async def _health_check(self):
+        return HTTPException(status_code=status.HTTP_200_OK, detail={"status": "available"})
 
     async def _handle_create(self, request_data: SyncRequest):
         if not self.create_handler:
